@@ -4,6 +4,7 @@ const greeting = require('./app/recognizer/greeting');
 const commands = require('./app/recognizer/commands');
 const smiles = require('./app/recognizer/smiles');
 const path = require('path');
+const azure = require('botbuilder-azure');
 
 const dialog = {
   welcome: require('./app/dialogs/welcome'),
@@ -15,26 +16,43 @@ const dialog = {
   addToCart: require('./app/dialogs/addToCart'),
   showCart: require('./app/dialogs/showCart')
 };
+const documentDbOptions = {
+  host: 'https://chatdata.documents.azure.com:443/',
+  masterKey:
+    'rqBf0Xs2PQe4tsQu4r6QJihcx0SPMTIcqUQpVqEkKkOK9RH1MG5sZEmryiFSQFOe7Jk8BoVStxnl9oLvA59T1g==',
+  database: 'botdocs',
+  collection: 'botdata'
+};
 
 const connector = new builder.ChatConnector({
   appId: process.env.MICROSOFT_APP_ID,
   appPassword: process.env.MICROSFT_APP_PASSWORD
 });
 
+const docDbClient = new azure.DocumentDbClient(documentDbOptions);
+
+const cosmosStorage = new azure.AzureBotStorage(
+  { gzipData: false },
+  docDbClient
+);
+
 // const connector = new builder.ChatConnector({
 //   appId: "f5c45411-326e-48ad-a7f2-88d079cdfc44",
 //   appPassword: "917742e3-948c-498a-9849-83e0af87dfff"
 // });
 
-const bot = new builder.UniversalBot(connector, {
-  persistConversationData: true
-});
+// const bot = new builder.UniversalBot(connector, {
+//   persistConversationData: true
+// });
 
+var bot = new builder.UniversalBot(connector).set('storage', cosmosStorage);
 var intents = new builder.IntentDialog({
   recognizers: [
     commands,
     greeting,
-    new builder.LuisRecognizer(process.env.LUIS_ENDPOINT)
+    new builder.LuisRecognizer(
+      `https://westeurope.api.cognitive.microsoft.com/luis/prediction/v3.0/apps/8cfd3b6c-86b1-4ec2-8441-7c3f30db9fa2/slots/production/predict?subscription-key=18df0fdeb4d24c5db73310bf9453507a&verbose=false&show-all-intents=false&log=false`
+    )
   ],
   intentThreshold: 0.2,
   recognizeOrder: builder.RecognizeOrder.series
@@ -50,12 +68,13 @@ intents.matches('ShowCart', '/showCart');
 intents.matches('Checkout', '/checkout');
 intents.matches('Reset', '/reset');
 intents.matches('Smile', '/smileBack');
-intents.onDefault('/confused');
+//intents.onDefault('/confused');
 
-// bot.dialog('/', intents);
-bot.dialog('/', function(session) {
-  session.send('You said ' + session.message.text);
-});
+bot.dialog('/', intents);
+// bot.dialog('/', function(session) {
+//   console.log('SESSION');
+//   session.send('You said ' + session.message.text);
+// });
 dialog.welcome(bot);
 dialog.categories(bot);
 dialog.explore(bot);

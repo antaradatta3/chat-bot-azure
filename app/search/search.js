@@ -5,15 +5,13 @@ const searchApp = process.env.SEARCH_APP_NAME;
 const apiKey = process.env.SEARCH_API_KEY;
 
 const indexes = {
-  categories: `https://${searchApp}.search.windows.net/indexes/categories/docs?api-version=2015-02-28`,
-  products: `https://${searchApp}.search.windows.net/indexes/products/docs?api-version=2015-02-28`,
-  variants: `https://${searchApp}.search.windows.net/indexes/variants/docs?api-version=2015-02-28`
+  categories: `https://fakestoreapi.com/products/categories`,
+  products: `https://fakestoreapi.com/products`
 };
 
 const search = (index, query) => {
   return request({
-    url: `${indexes[index]}&${query}`,
-    headers: { 'api-key': `${apiKey}` }
+    url: `${indexes[index]}`
   })
     .then(result => {
       const obj = JSON.parse(result);
@@ -22,7 +20,7 @@ const search = (index, query) => {
           obj.value &&
           obj.value.length} results`
       );
-      return obj.value;
+      return obj;
     })
     .catch(error => {
       console.error(error);
@@ -35,9 +33,9 @@ const searchProducts = query => search('products', query);
 const searchVariants = query => search('variants', query);
 
 module.exports = {
-  listTopLevelCategories: () => searchCategories('$filter=parent eq null'),
+  listTopLevelCategories: () => searchCategories(),
 
-  findCategoryByTitle: title => searchCategories(`search=title:"${title}~"`),
+  findCategoryByTitle: title => searchCategories(title),
 
   findSubcategoriesByParentId: id =>
     searchCategories(`$filter=parent eq '${id}'`),

@@ -1,6 +1,7 @@
 module.exports = function(bot) {
   bot.dialog('/welcome', [
     function(session, args, next) {
+      console.log('INSIDE DIALOG');
       const lastVisit = session.userData.lastVisit;
 
       session.send(['Hello!', 'Hi there!', 'Hi!']);

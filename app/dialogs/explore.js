@@ -2,12 +2,14 @@ const builder = require('botbuilder');
 const search = require('../search/search');
 
 const extractQuery = (session, args) => {
-  if (args && args.entities && args.entities.length) {
+  console.log(args);
+  if (args && args.entities && args.entities.Entity.length) {
+    console.log('ARGS ' + args);
     // builder.EntityRecognizer.findEntity(args.entities, 'CompanyName');
     // builder.EntityRecognizer.findBestMatch(data, entity.entity);
-    const question = args.entities.find(e => e.type === 'Entity');
-    const detail = args.entities.find(e => e.type === 'Detail');
-
+    const question = args.entities.find(e => e === 'Entity');
+    const detail = args.entities.Entity.find(e => e === 'Detail');
+    console.log(question + ' ' + detail);
     return `${(detail || { entity: '' }).entity} ${
       (question || { entity: '' }).entity
     }`.trim();
@@ -92,7 +94,7 @@ module.exports = function(bot) {
   bot.dialog('/explore', [
     function(session, args, next) {
       const query = extractQuery(session, args);
-
+      console.log(query);
       if (!query) {
         // ToDo: randomize across a few different sentences
         builder.Prompts.text(
