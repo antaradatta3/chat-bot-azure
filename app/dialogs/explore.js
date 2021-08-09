@@ -1,17 +1,48 @@
 const builder = require('botbuilder');
 const search = require('../search/search');
 
+// const extractQuery = (session, args) => {
+//   console.log('++++++++++++++++++++');
+//   console.log(args);
+//   console.log('++++++++++++++++++++');
+//   if (args && args.entities && args.entities.Entity.length) {
+//     console.log('++++++++++++++++');
+//     console.log('ARGS ' + args[0]);
+//     console.log('++++++++++++++++');
+//     // builder.EntityRecognizer.findEntity(args.entities, 'CompanyName');
+//     // builder.EntityRecognizer.findBestMatch(data, entity.entity);
+//     const question = args.entities.Entity.find(e => e === 'Entity');
+//     const detail = args.entities.Entity.find(e => e === 'Detail');
+//     // console.log(question + ' ' + detail);
+//     return `${(detail || { entity: '' }).entity} ${
+//       (question || { entity: '' }).entity
+//     }`.trim();
+//   } else if (session.message.text.split(' ').length <= 2) {
+//     // just assume they typed a category or a product name
+//     return session.message.text.replace('please', '').trim();
+//   } else {
+//     return undefined;
+//   }
+// };
+
 const extractQuery = (session, args) => {
+  console.log('++++++++++++++++++++');
   console.log(args);
-  if (args && args.entities && args.entities.Entity.length) {
-    console.log('ARGS ' + args);
+  console.log('++++++++++++++++++++');
+  if (args && args.entities) {
+    // console.log('++++++++++++++++');
+    // console.log(args);
+    // console.log('++++++++++++++++');
     // builder.EntityRecognizer.findEntity(args.entities, 'CompanyName');
     // builder.EntityRecognizer.findBestMatch(data, entity.entity);
-    const question = args.entities.find(e => e === 'Entity');
+    // const question = args.entities.Entity.find(e => e === 'Entity');
+    // const question = args.entities.Entity.find(e => e === 'Entity');
+    const question = args.entities;
     const detail = args.entities.Entity.find(e => e === 'Detail');
-    console.log(question + ' ' + detail);
-    return `${(detail || { entity: '' }).entity} ${
-      (question || { entity: '' }).entity
+    // console.log(question + '----- ' + detail);
+    // console.log('++++++++++++++++');
+    return `${(detail || { Entity: '' }).Entity} ${
+      (question || { Entity: '' }).Entity
     }`.trim();
   } else if (session.message.text.split(' ').length <= 2) {
     // just assume they typed a category or a product name
@@ -93,8 +124,14 @@ const listProducts = (session, products, start = 0) => {
 module.exports = function(bot) {
   bot.dialog('/explore', [
     function(session, args, next) {
+      // console.log('$$$$$$$$$$$$$$$$$$$$');
+      // console.log(args);
+      // console.log('$$$$$$$$$$$$$$$$$$$$');
       const query = extractQuery(session, args);
-      console.log(query);
+      // const query = 'electronics';
+      // console.log('************');
+      // console.log(query);
+      // console.log('************');
       if (!query) {
         // ToDo: randomize across a few different sentences
         builder.Prompts.text(
@@ -109,27 +146,33 @@ module.exports = function(bot) {
       session.sendTyping();
 
       const query = args.response;
-
+      console.log('++++++++', query);
       // ToDo: also need to search for products in the category
       search.find(query).then(({ subcategories, products }) => {
-        if (subcategories.length) {
-          session.privateConversationData = Object.assign(
-            {},
-            session.privateConversationData,
-            {
-              list: {
-                type: 'categories',
-                data: subcategories
-              },
-              pagination: {
-                start: 0
-              }
-            }
-          );
-          session.save();
+        // console.log('%%%%%%%%%%%%%%%%%%%%%%');
+        // console.log(subcategories);
+        // console.log('%%%%%%%%%%%%%%%%%%%%%%');
+        // console.log(products);
+        // console.log('%%%%%%%%%%%%%%%%%%%%%%');
+        // if (subcategories.length) {
+        //   session.privateConversationData = Object.assign(
+        //     {},
+        //     session.privateConversationData,
+        //     {
+        //       list: {
+        //         type: 'categories',
+        //         data: subcategories
+        //       },
+        //       pagination: {
+        //         start: 0
+        //       }
+        //     }
+        //   );
+        //   session.save();
 
-          listCategories(session, subcategories);
-        } else if (products.length) {
+        //   listCategories(session, subcategories);
+        // } else
+        if (products.length) {
           session.privateConversationData = Object.assign(
             {},
             session.privateConversationData,

@@ -5,20 +5,20 @@ const displayCart = function(session, cart) {
   const cards = cart.map(item =>
     new builder.ThumbnailCard(session)
       .title(item.product.title)
-      .subtitle(`$${item.variant.price}`)
-      .text(
-        `${item.variant.color ? 'Color -' + item.variant.color + '\n' : ''}` +
-          `${item.variant.size ? 'Size -' + item.variant.size : ''}` ||
-          item.product.description
-      )
+      .subtitle(`$${item.product.price}`)
+      // .text(
+      //   `${item.variant.color ? 'Color -' + item.variant.color + '\n' : ''}` +
+      //     `${item.variant.size ? 'Size -' + item.variant.size : ''}` ||
+      //     item.product.description
+      // )
       .buttons([
         builder.CardAction.imBack(
           session,
-          `@remove:${item.variant.id}`,
+          `@remove:${item.product.id}`,
           'Remove'
         )
       ])
-      .images([builder.CardImage.create(session, item.variant.image)])
+      .images([builder.CardImage.create(session, item.product.image)])
   );
 
   session.sendTyping();

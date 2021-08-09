@@ -60,6 +60,7 @@ var intents = new builder.IntentDialog({
 
 intents.matches('Greeting', '/welcome');
 intents.matches('ShowTopCategories', '/categories');
+intents.matches('category', '/category');
 intents.matches('Explore', '/explore');
 intents.matches('Next', '/next');
 intents.matches('ShowProduct', '/showProduct');
@@ -129,5 +130,5 @@ app.get(`/`, (_, res) => res.sendFile(path.join(__dirname + '/index.html')));
 app.post('/api/messages', connector.listen());
 
 app.listen(process.env.PORT || process.env.port || 3978, () => {
-  console.log('Express HTTP is ready and is accepting connections');
+  console.log('Express HTTP is ready and is accepting connections at 3978');
 });

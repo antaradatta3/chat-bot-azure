@@ -3,22 +3,31 @@ const search = require('../search/search');
 
 const showProduct = function(session, product) {
   session.sendTyping();
-
+  console.log('###############');
+  console.log(product);
+  console.log('###############');
   const tile = new builder.HeroCard(session)
     .title(product.title)
     .subtitle(`$${product.price}`)
     .text(product.description)
     .buttons(
-      product.modifiers.length === 0 ||
-        (product.size.length <= 1 && product.color.length <= 1)
-        ? [
-            builder.CardAction.postBack(
-              session,
-              `@add:${product.id}`,
-              'Add To Cart'
-            )
-          ]
-        : []
+      // product.modifiers.length === 0 ||
+      //   (product.size.length <= 1 && product.color.length <= 1)
+      //   ? [
+      //       builder.CardAction.postBack(
+      //         session,
+      //         `@add:${product.id}`,
+      //         'Add To Cart'
+      //       )
+      //     ]
+      //   : []
+      [
+        builder.CardAction.postBack(
+          session,
+          `@add:${product.id}`,
+          'Add To Cart'
+        )
+      ]
     )
     .images([builder.CardImage.create(session, product.image)]);
 
@@ -36,7 +45,7 @@ module.exports = function(bot) {
         args.entities,
         'Product'
       );
-
+      console.log(product);
       if (!product || !product.entity) {
         builder.Prompts.text(
           session,
@@ -48,28 +57,29 @@ module.exports = function(bot) {
     },
     function(session, args, next) {
       session.sendTyping();
-
+      console.log(args);
       const product = args.response;
 
       Promise.all([
-        search.findProductById(product),
-        search.findProductsByTitle(product)
+        search.findProductById(product)
+        // search.findProductsByTitle(product)
       ])
         .then(([product, products]) => {
-          const item = product.concat(products)[0];
-          if (!item) {
+          // const item = product.concat(products)[0];
+          if (!product) {
             session.endDialog(
               "Sorry, I couldn't find the product you asked about"
             );
             return Promise.reject();
           } else {
-            return item;
+            showProduct(session, product);
+            return product;
           }
         })
-        .then(item => {
-          showProduct(session, item);
-          return item;
-        })
+        // .then(item => {
+        //   showProduct(session, item);
+        //   return item;
+        // })
         .then(item => {
           session.dialogData.product = item;
 
@@ -78,15 +88,16 @@ module.exports = function(bot) {
             (item.size.length <= 1 && item.color.length <= 1)
           ) {
             next();
-          } else {
-            builder.Prompts.confirm(
-              session,
-              `This product comes in differnet ` +
-                item.modifiers.map(mod => `${mod}s`).join(' and ') +
-                '. Would you like to choose one that fits you?',
-              { listStyle: builder.ListStyle.button }
-            );
           }
+          // else {
+          //   builder.Prompts.confirm(
+          //     session,
+          //     `This product comes in differnet ` +
+          //       item.modifiers.map(mod => `${mod}s`).join(' and ') +
+          //       '. Would you like to choose one that fits you?',
+          //     { listStyle: builder.ListStyle.button }
+          //   );
+          // }
         })
         .catch(err => {
           console.error(err);

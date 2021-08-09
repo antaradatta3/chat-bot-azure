@@ -6,12 +6,21 @@ const apiKey = process.env.SEARCH_API_KEY;
 
 const indexes = {
   categories: `https://fakestoreapi.com/products/categories`,
+  category: `https://fakestoreapi.com/products/category/`,
   products: `https://fakestoreapi.com/products`
 };
 
 const search = (index, query) => {
+  // console.log('###########################');
+  // console.log(index, '---', query);
+  // console.log(`${indexes[index]}`);
+  let url = query ? `${indexes[index]}/${query}` : `${indexes[index]}`;
+
+  // console.log('###########################');
+  console.log(url, '@@@@@@@@@@@@@');
   return request({
-    url: `${indexes[index]}`
+    url: url
+    // url: `https://fakestoreapi.com/products/category/electronics`
   })
     .then(result => {
       const obj = JSON.parse(result);
@@ -28,14 +37,41 @@ const search = (index, query) => {
     });
 };
 
+// const searchByName = (index, query) => {
+//   console.log('!!!!!!!!!!!!!!!!!!!!!!!!');
+//   console.log(index, '---', query);
+//   console.log(`${indexes[index]}`);
+//   console.log('!!!!!!!!!!!!!!!!!!!!!!!!');
+//   return request({
+//     // url: `${indexes[index]}`
+//     url: `https://fakestoreapi.com/products/category/electronics`
+//   })
+//     .then(result => {
+//       const obj = JSON.parse(result);
+//       console.log(
+//         `Searched ${index} for [${query}] and found ${obj &&
+//           obj.value &&
+//           obj.value.length} results`
+//       );
+//       return obj;
+//     })
+//     .catch(error => {
+//       console.error(error);
+//       return [];
+//     });
+// };
+
 const searchCategories = query => search('categories', query);
+// const searchCategory = query => searchByName('category', query);
+const searchCategoriesByName = query => search('category', query);
+// const findCategoryByTitle = query => search('categories', query);
 const searchProducts = query => search('products', query);
 const searchVariants = query => search('variants', query);
 
 module.exports = {
   listTopLevelCategories: () => searchCategories(),
-
-  findCategoryByTitle: title => searchCategories(title),
+  findCategoryByTitle: title => searchCategoriesByName(title),
+  // findCategoryByTitle: title => searchCategory(title),
 
   findSubcategoriesByParentId: id =>
     searchCategories(`$filter=parent eq '${id}'`),
@@ -43,7 +79,9 @@ module.exports = {
   findSubcategoriesByParentTitle: function(title) {
     // ToDo: would be easier if categories had their parent titles indexed
     return this.findCategoryByTitle(title).then(value => {
-      // ToDo: do we care about the test score on the result?
+      // ToDo: do we care about the test score on the result?'
+      // console.log(value, '---------------------');
+      return value;
       return value.slice(0, 1).reduce((chain, v) => {
         return chain.then(() => {
           return this.findSubcategoriesByParentId(v.id);
@@ -53,7 +91,7 @@ module.exports = {
   },
 
   findProductById: function(product) {
-    return searchProducts(`$filter=id eq '${product}'`);
+    return searchProducts(product);
   },
 
   findProductsByTitle: function(product) {
@@ -111,7 +149,8 @@ module.exports = {
 
     return Promise.all([
       this.findSubcategoriesByParentTitle(query),
-      this.findProducts(`search=${query}`)
+      this.findSubcategoriesByParentTitle(query)
+      // this.findProducts(query)
     ]).then(([subcategories, products]) => ({ subcategories, products }));
   }
 };

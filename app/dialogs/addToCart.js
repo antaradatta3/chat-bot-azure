@@ -6,60 +6,44 @@ const sentiment = require('../sentiment');
 const lookupProductOrVariant = function(session, id, next) {
   session.sendTyping();
 
-  return Promise.all([
-    search.findProductById(id),
-    search.findVariantById(id)
-  ]).then(([products, variants]) => {
-    if (products.length) {
-      product = products[0];
-      if (
-        product.modifiers.length === 0 ||
-        (product.size.length <= 1 && product.color.length <= 1)
-      ) {
-        session.sendTyping();
+  return search.findProductById(id).then(product => ({ product }));
+  // .then(([products, variants]) => {
+  //   console.log(products, '=============');
+  //   if (products) {
+  // product = products[0];
+  // return products;
+  // return new Promise.of(products);
+  // if (
+  //   product.modifiers.length === 0 ||
+  //   (product.size.length <= 1 && product.color.length <= 1)
+  // ) {
+  //   session.sendTyping();
 
-        return search
-          .findVariantForProduct(product.id)
-          .then(variant => ({ product, variant }));
-      } else {
-        // This would only happen if someone clicked Add To Cart on a multi-variant product
-        // And I don't think we give the user that option
-        session.reset('/showProduct', {
-          entities: [
-            {
-              entity: id,
-              score: 1,
-              type: 'Product'
-            }
-          ]
-        });
-        return Promise.reject();
-      }
-    } else if (variants.length) {
-      const variant = variants[0];
-
-      return search
-        .findProductById(variant.productId)
-        .then(products => ({
-          product: products[0],
-          variant
-        }))
-        .catch(error => {
-          console.error(error);
-        });
-    } else {
-      session.endDialog(`I cannot find ${id} in my product catalog, sorry!`);
-      return Promise.reject();
-    }
-  });
+  //   return search
+  //     .findVariantForProduct(product.id)
+  //     .then(variant => ({ product, variant }));
+  // } else {
+  //   // This would only happen if someone clicked Add To Cart on a multi-variant product
+  //   // And I don't think we give the user that option
+  //   session.reset('/showProduct', {
+  //     entities: [
+  //       {
+  //         entity: id,
+  //         score: 1,
+  //         type: 'Product'
+  //       }
+  //     ]
+  //   });
+  //   return Promise.reject();
+  // } else {
+  //   session.endDialog(`I cannot find ${id} in my product catalog, sorry!`);
+  //   return Promise.reject();
+  // }
+  // });
 };
 
 const describe = function(product, variant) {
-  return (
-    `${product.title} (${variant.sku})` +
-    (!!variant.color ? `, Color - ${variant.color}` : '') +
-    (!!variant.size ? `, Size - ${variant.size}` : '')
-  );
+  return `${product.title} `;
 };
 
 /*
@@ -142,13 +126,13 @@ module.exports = function(bot) {
       session.privateConversationData.cart = (
         session.privateConversationData.cart || []
       ).concat({
-        product,
-        variant
+        product
       });
+      console.log(args, '================');
+      session.send(`I have added ${describe(product)} to your cart`);
 
-      session.send(`I have added ${describe(product, variant)} to your cart`);
-
-      next({ variant });
+      // next({ variant });
+      session.reset('/showCart');
     },
     function(session, args, next) {
       // not doing recommendations at the moment

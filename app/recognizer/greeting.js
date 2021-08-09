@@ -36,7 +36,7 @@ module.exports = {
       recognized.intent = 'Greeting';
       recognized.score = 1;
     }
-    console.log('Greeting recognized ' + recognized);
+    // console.log('Greeting recognized ' + recognized);
     callback.call(null, null, recognized);
   }
 };
