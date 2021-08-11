@@ -11,16 +11,9 @@ const indexes = {
 };
 
 const search = (index, query) => {
-  // console.log('###########################');
-  // console.log(index, '---', query);
-  // console.log(`${indexes[index]}`);
   let url = query ? `${indexes[index]}/${query}` : `${indexes[index]}`;
-
-  // console.log('###########################');
-  console.log(url, '@@@@@@@@@@@@@');
   return request({
     url: url
-    // url: `https://fakestoreapi.com/products/category/electronics`
   })
     .then(result => {
       const obj = JSON.parse(result);
@@ -37,32 +30,7 @@ const search = (index, query) => {
     });
 };
 
-// const searchByName = (index, query) => {
-//   console.log('!!!!!!!!!!!!!!!!!!!!!!!!');
-//   console.log(index, '---', query);
-//   console.log(`${indexes[index]}`);
-//   console.log('!!!!!!!!!!!!!!!!!!!!!!!!');
-//   return request({
-//     // url: `${indexes[index]}`
-//     url: `https://fakestoreapi.com/products/category/electronics`
-//   })
-//     .then(result => {
-//       const obj = JSON.parse(result);
-//       console.log(
-//         `Searched ${index} for [${query}] and found ${obj &&
-//           obj.value &&
-//           obj.value.length} results`
-//       );
-//       return obj;
-//     })
-//     .catch(error => {
-//       console.error(error);
-//       return [];
-//     });
-// };
-
 const searchCategories = query => search('categories', query);
-// const searchCategory = query => searchByName('category', query);
 const searchCategoriesByName = query => search('category', query);
 // const findCategoryByTitle = query => search('categories', query);
 const searchProducts = query => search('products', query);
@@ -82,11 +50,11 @@ module.exports = {
       // ToDo: do we care about the test score on the result?'
       // console.log(value, '---------------------');
       return value;
-      return value.slice(0, 1).reduce((chain, v) => {
-        return chain.then(() => {
-          return this.findSubcategoriesByParentId(v.id);
-        });
-      }, Promise.resolve({ value: [] }));
+      // return value.slice(0, 1).reduce((chain, v) => {
+      //   return chain.then(() => {
+      //     return this.findSubcategoriesByParentId(v.id);
+      //   });
+      // }, Promise.resolve({ value: [] }));
     });
   },
 

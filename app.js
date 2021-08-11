@@ -60,7 +60,6 @@ var intents = new builder.IntentDialog({
 
 intents.matches('Greeting', '/welcome');
 intents.matches('ShowTopCategories', '/categories');
-intents.matches('category', '/category');
 intents.matches('Explore', '/explore');
 intents.matches('Next', '/next');
 intents.matches('ShowProduct', '/showProduct');

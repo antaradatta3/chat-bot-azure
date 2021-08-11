@@ -128,7 +128,6 @@ module.exports = function(bot) {
       ).concat({
         product
       });
-      console.log(args, '================');
       session.send(`I have added ${describe(product)} to your cart`);
 
       // next({ variant });

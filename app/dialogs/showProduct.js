@@ -3,9 +3,6 @@ const search = require('../search/search');
 
 const showProduct = function(session, product) {
   session.sendTyping();
-  console.log('###############');
-  console.log(product);
-  console.log('###############');
   const tile = new builder.HeroCard(session)
     .title(product.title)
     .subtitle(`$${product.price}`)
@@ -80,25 +77,25 @@ module.exports = function(bot) {
         //   showProduct(session, item);
         //   return item;
         // })
-        .then(item => {
-          session.dialogData.product = item;
+        // .then(item => {
+        //   session.dialogData.product = item;
 
-          if (
-            item.modifiers.length === 0 ||
-            (item.size.length <= 1 && item.color.length <= 1)
-          ) {
-            next();
-          }
-          // else {
-          //   builder.Prompts.confirm(
-          //     session,
-          //     `This product comes in differnet ` +
-          //       item.modifiers.map(mod => `${mod}s`).join(' and ') +
-          //       '. Would you like to choose one that fits you?',
-          //     { listStyle: builder.ListStyle.button }
-          //   );
-          // }
-        })
+        //   if (
+        //     item.modifiers.length === 0 ||
+        //     (item.size.length <= 1 && item.color.length <= 1)
+        //   ) {
+        //     next();
+        //   }
+        // else {
+        //   builder.Prompts.confirm(
+        //     session,
+        //     `This product comes in differnet ` +
+        //       item.modifiers.map(mod => `${mod}s`).join(' and ') +
+        //       '. Would you like to choose one that fits you?',
+        //     { listStyle: builder.ListStyle.button }
+        //   );
+        // }
+        // })
         .catch(err => {
           console.error(err);
         });
