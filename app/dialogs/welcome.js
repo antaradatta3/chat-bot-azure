@@ -7,9 +7,7 @@ module.exports = function(bot) {
       session.send(['Hello!', 'Hi there!', 'Hi!']);
 
       if (!lastVisit) {
-        session.send(
-          'Our store carries bikes, parts, accessories, and sport clothing articles'
-        );
+        session.send('Our store carries electronics, clothing, jewelery etc');
         session.userData = Object.assign({}, session.userData, {
           lastVisit: new Date()
         });

@@ -1,4 +1,4 @@
-const builder = require('botbuilder');
+const builder = require('./botbuilder');
 const express = require('express');
 const greeting = require('./app/recognizer/greeting');
 const commands = require('./app/recognizer/commands');
