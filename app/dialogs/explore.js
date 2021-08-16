@@ -2,16 +2,13 @@ const builder = require('botbuilder');
 const search = require('../search/search');
 
 const extractQuery = (session, args) => {
-  console.log(args);
-  if (args && args.entities && args.entities.Entity.length) {
-    console.log('ARGS ' + args);
+  if (args && args.entities) {
     // builder.EntityRecognizer.findEntity(args.entities, 'CompanyName');
     // builder.EntityRecognizer.findBestMatch(data, entity.entity);
-    const question = args.entities.find(e => e === 'Entity');
+    const question = args.entities;
     const detail = args.entities.Entity.find(e => e === 'Detail');
-    console.log(question + ' ' + detail);
-    return `${(detail || { entity: '' }).entity} ${
-      (question || { entity: '' }).entity
+    return `${(detail || { Entity: '' }).Entity} ${
+      (question || { Entity: '' }).Entity
     }`.trim();
   } else if (session.message.text.split(' ').length <= 2) {
     // just assume they typed a category or a product name
@@ -93,8 +90,13 @@ const listProducts = (session, products, start = 0) => {
 module.exports = function(bot) {
   bot.dialog('/explore', [
     function(session, args, next) {
+      // console.log('###############');
+      // console.log(args);
+      // console.log('###############');
       const query = extractQuery(session, args);
-      console.log(query);
+      // console.log('+++++++++++');
+      // console.log(query);
+      // console.log('+++++++++++');
       if (!query) {
         // ToDo: randomize across a few different sentences
         builder.Prompts.text(
@@ -109,27 +111,27 @@ module.exports = function(bot) {
       session.sendTyping();
 
       const query = args.response;
-
       // ToDo: also need to search for products in the category
       search.find(query).then(({ subcategories, products }) => {
-        if (subcategories.length) {
-          session.privateConversationData = Object.assign(
-            {},
-            session.privateConversationData,
-            {
-              list: {
-                type: 'categories',
-                data: subcategories
-              },
-              pagination: {
-                start: 0
-              }
-            }
-          );
-          session.save();
+        // if (subcategories.length) {
+        //   session.privateConversationData = Object.assign(
+        //     {},
+        //     session.privateConversationData,
+        //     {
+        //       list: {
+        //         type: 'categories',
+        //         data: subcategories
+        //       },
+        //       pagination: {
+        //         start: 0
+        //       }
+        //     }
+        //   );
+        //   session.save();
 
-          listCategories(session, subcategories);
-        } else if (products.length) {
+        //   listCategories(session, subcategories);
+        // } else
+        if (products.length) {
           session.privateConversationData = Object.assign(
             {},
             session.privateConversationData,

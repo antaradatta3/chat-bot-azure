@@ -1,4 +1,4 @@
-const builder = require('botbuilder');
+const builder = require('./app/botbuilder');
 const express = require('express');
 const greeting = require('./app/recognizer/greeting');
 const commands = require('./app/recognizer/commands');
@@ -25,8 +25,8 @@ const documentDbOptions = {
 };
 
 const connector = new builder.ChatConnector({
-  appId: process.env.MICROSOFT_APP_ID,
-  appPassword: process.env.MICROSFT_APP_PASSWORD
+  appId: '30c7a3bc-4526-467c-989f-35c86fe0debd',
+  appPassword: '~PP-l2p_-N8tERYDVs._fH44232O_hMaec'
 });
 
 const docDbClient = new azure.DocumentDbClient(documentDbOptions);
@@ -129,5 +129,5 @@ app.get(`/`, (_, res) => res.sendFile(path.join(__dirname + '/index.html')));
 app.post('/api/messages', connector.listen());
 
 app.listen(process.env.PORT || process.env.port || 3978, () => {
-  console.log('Express HTTP is ready and is accepting connections');
+  console.log('Express HTTP is ready and is accepting connections at 3978');
 });

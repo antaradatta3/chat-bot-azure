@@ -6,12 +6,14 @@ const apiKey = process.env.SEARCH_API_KEY;
 
 const indexes = {
   categories: `https://fakestoreapi.com/products/categories`,
+  category: `https://fakestoreapi.com/products/category/`,
   products: `https://fakestoreapi.com/products`
 };
 
 const search = (index, query) => {
+  let url = query ? `${indexes[index]}/${query}` : `${indexes[index]}`;
   return request({
-    url: `${indexes[index]}`
+    url: url
   })
     .then(result => {
       const obj = JSON.parse(result);
@@ -29,13 +31,15 @@ const search = (index, query) => {
 };
 
 const searchCategories = query => search('categories', query);
+const searchCategoriesByName = query => search('category', query);
+// const findCategoryByTitle = query => search('categories', query);
 const searchProducts = query => search('products', query);
 const searchVariants = query => search('variants', query);
 
 module.exports = {
   listTopLevelCategories: () => searchCategories(),
-
-  findCategoryByTitle: title => searchCategories(title),
+  findCategoryByTitle: title => searchCategoriesByName(title),
+  // findCategoryByTitle: title => searchCategory(title),
 
   findSubcategoriesByParentId: id =>
     searchCategories(`$filter=parent eq '${id}'`),
@@ -43,17 +47,19 @@ module.exports = {
   findSubcategoriesByParentTitle: function(title) {
     // ToDo: would be easier if categories had their parent titles indexed
     return this.findCategoryByTitle(title).then(value => {
-      // ToDo: do we care about the test score on the result?
-      return value.slice(0, 1).reduce((chain, v) => {
-        return chain.then(() => {
-          return this.findSubcategoriesByParentId(v.id);
-        });
-      }, Promise.resolve({ value: [] }));
+      // ToDo: do we care about the test score on the result?'
+      // console.log(value, '---------------------');
+      return value;
+      // return value.slice(0, 1).reduce((chain, v) => {
+      //   return chain.then(() => {
+      //     return this.findSubcategoriesByParentId(v.id);
+      //   });
+      // }, Promise.resolve({ value: [] }));
     });
   },
 
   findProductById: function(product) {
-    return searchProducts(`$filter=id eq '${product}'`);
+    return searchProducts(product);
   },
 
   findProductsByTitle: function(product) {
@@ -111,7 +117,8 @@ module.exports = {
 
     return Promise.all([
       this.findSubcategoriesByParentTitle(query),
-      this.findProducts(`search=${query}`)
+      this.findSubcategoriesByParentTitle(query)
+      // this.findProducts(query)
     ]).then(([subcategories, products]) => ({ subcategories, products }));
   }
 };
