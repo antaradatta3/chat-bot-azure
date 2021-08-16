@@ -16,7 +16,10 @@
     "botbuilder-azure": "^3.0.4",
     "express": "^4.16.2",
     "lodash": "^4.17.4",
-    "request-promise-native": "^1.0.5"
+    "request-promise-native": "^1.0.5",
+    "@types/node-fetch": "^2.5.4",
+    "adal-node": "^0.2.1",
+    "node-fetch": "^2.6.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",
