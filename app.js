@@ -25,8 +25,8 @@ const documentDbOptions = {
 };
 
 const connector = new builder.ChatConnector({
-  appId: process.env.MICROSOFT_APP_ID,
-  appPassword: process.env.MICROSFT_APP_PASSWORD
+  appId: '30c7a3bc-4526-467c-989f-35c86fe0debd',
+  appPassword: '~PP-l2p_-N8tERYDVs._fH44232O_hMaec'
 });
 
 const docDbClient = new azure.DocumentDbClient(documentDbOptions);
